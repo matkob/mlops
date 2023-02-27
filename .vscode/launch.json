@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Model train&test",
+      "type": "python",
+      "request": "launch",
+      "program": "model/model.py",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "args": ["--data_dir", "model/data", "--data_file", "ob_snapshots.csv", "--time_window", "2"]
+    }
+  ]
+}
