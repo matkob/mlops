@@ -18,3 +18,17 @@ provider "google" {
   region  = var.region
   zone    = var.zone
 }
+
+data "google_project" "project" {
+}
+
+data "google_client_openid_userinfo" "me" {
+}
+
+output "email" {
+  value = data.google_client_openid_userinfo.me.email
+}
+
+output "project" {
+  value = data.google_project.project
+}
