@@ -42,32 +42,48 @@
 companies:
   type: pandas.CSVDataSet
   filepath: data/01_raw/companies.csv
+  layer: raw
 
 reviews:
   type: pandas.CSVDataSet
   filepath: data/01_raw/reviews.csv
+  layer: raw
 
 shuttles:
   type: pandas.ExcelDataSet
   filepath: data/01_raw/shuttles.xlsx
-  load_args:
-    engine: openpyxl # Use modern Excel engine, it is the default since Kedro 0.18.0
+  layer: raw
 
-# Any intermediary data you want to materialize need to be explicitly configured here
-preprocessed_companies:
-  type: pandas.ParquetDataSet
-  filepath: data/02_intermediate/preprocessed_companies.pq
+# TODO: uncomment what's below and move what's above to cloud env config
+# companies:
+#   type: pandas.CSVDataSet
+#   filepath: data/01_raw/companies.csv
 
-preprocessed_shuttles:
-  type: pandas.ParquetDataSet
-  filepath: data/02_intermediate/preprocessed_shuttles.pq
+# reviews:
+#   type: pandas.CSVDataSet
+#   filepath: data/01_raw/reviews.csv
 
-model_input_table:
-  type: pandas.ParquetDataSet
-  filepath: data/03_primary/model_input_table.pq
+# shuttles:
+#   type: pandas.ExcelDataSet
+#   filepath: data/01_raw/shuttles.xlsx
+#   load_args:
+#     engine: openpyxl # Use modern Excel engine, it is the default since Kedro 0.18.0
 
-regressor:
-  type: pickle.PickleDataSet
-  filepath: data/06_models/regressor.pickle
-  versioned: true
-  # When it's versioned, there will be directory created with file for each version
+# # Any intermediary data you want to materialize need to be explicitly configured here
+# preprocessed_companies:
+#   type: pandas.ParquetDataSet
+#   filepath: data/02_intermediate/preprocessed_companies.pq
+
+# preprocessed_shuttles:
+#   type: pandas.ParquetDataSet
+#   filepath: data/02_intermediate/preprocessed_shuttles.pq
+
+# model_input_table:
+#   type: pandas.ParquetDataSet
+#   filepath: data/03_primary/model_input_table.pq
+
+# regressor:
+#   type: pickle.PickleDataSet
+#   filepath: data/06_models/regressor.pickle
+#   versioned: true
+#   # When it's versioned, there will be directory created with file for each version
