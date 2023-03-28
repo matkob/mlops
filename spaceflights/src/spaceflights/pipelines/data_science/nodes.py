@@ -1,4 +1,5 @@
 import logging
+import mlflow
 from typing import Dict, Tuple
 
 import pandas as pd
@@ -55,3 +56,4 @@ def evaluate_model(
     logger = logging.getLogger(__name__)
     logger.info("Model has a coefficient R^2 of %.3f on test data.", r2)
     logger.info("Model has a RMSE of %.3f on test data.", rmse)
+    mlflow.log_metric('r2_score', r2)
