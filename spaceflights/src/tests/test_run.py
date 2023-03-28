@@ -16,12 +16,12 @@ from kedro.framework.hooks import _create_hook_manager
 
 
 @pytest.fixture
-def config_loader():
+def config_loader() -> ConfigLoader:
     return ConfigLoader(conf_source=str(Path.cwd()))
 
 
 @pytest.fixture
-def project_context(config_loader):
+def project_context(config_loader: ConfigLoader) -> KedroContext:
     return KedroContext(
         package_name="spaceflights",
         project_path=Path.cwd(),
@@ -34,5 +34,5 @@ def project_context(config_loader):
 # and should be replaced with the ones testing the project
 # functionality
 class TestProjectContext:
-    def test_project_path(self, project_context):
+    def test_project_path(self, project_context: KedroContext) -> None:
         assert project_context.project_path == Path.cwd()

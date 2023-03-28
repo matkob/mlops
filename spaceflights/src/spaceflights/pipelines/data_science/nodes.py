@@ -1,6 +1,6 @@
 import logging
 import mlflow
-from typing import Dict, Tuple
+from typing import Any, Dict, Tuple
 
 import pandas as pd
 from sklearn.linear_model import LinearRegression
@@ -8,7 +8,9 @@ from sklearn.metrics import r2_score, mean_squared_error
 from sklearn.model_selection import train_test_split
 
 
-def split_data(data: pd.DataFrame, parameters: Dict) -> Tuple:
+def split_data(
+    data: pd.DataFrame, parameters: Dict[str, Any]
+) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """Splits data into features and targets training and test sets.
 
     Args:
@@ -42,7 +44,7 @@ def train_model(X_train: pd.DataFrame, y_train: pd.Series) -> LinearRegression:
 
 def evaluate_model(
     regressor: LinearRegression, X_test: pd.DataFrame, y_test: pd.Series
-):
+) -> None:
     """Calculates and logs the coefficient of determination.
 
     Args:
@@ -56,4 +58,4 @@ def evaluate_model(
     logger = logging.getLogger(__name__)
     logger.info("Model has a coefficient R^2 of %.3f on test data.", r2)
     logger.info("Model has a RMSE of %.3f on test data.", rmse)
-    mlflow.log_metric('r2_score', r2)
+    mlflow.log_metric("r2_score", r2)

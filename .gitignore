@@ -34,3 +34,11 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+# Doit
+.doit.*
+
+# mypy
+.mypy_cache/
+
+# Python
+__pycache__/

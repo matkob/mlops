@@ -1,0 +1,5 @@
+doit~=0.36.0
+mypy~=1.1.1
+black~=22.0
+black[jupyter]~=22.0
+flake8>=3.7.9, <5.0
