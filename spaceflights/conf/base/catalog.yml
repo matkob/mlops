@@ -53,6 +53,7 @@ shuttles:
   load_args:
     engine: openpyxl # Use modern Excel engine, it is the default since Kedro 0.18.0
 
+# Any intermediary data you want to materialize need to be explicitly configured here
 preprocessed_companies:
   type: pandas.ParquetDataSet
   filepath: data/02_intermediate/preprocessed_companies.pq
@@ -69,3 +70,4 @@ regressor:
   type: pickle.PickleDataSet
   filepath: data/06_models/regressor.pickle
   versioned: true
+  # When it's versioned, there will be directory created with file for each version

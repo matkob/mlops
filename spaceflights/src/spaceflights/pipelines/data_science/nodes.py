@@ -3,7 +3,7 @@ from typing import Dict, Tuple
 
 import pandas as pd
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import r2_score
+from sklearn.metrics import r2_score, mean_squared_error
 from sklearn.model_selection import train_test_split
 
 
@@ -50,6 +50,8 @@ def evaluate_model(
         y_test: Testing data for price.
     """
     y_pred = regressor.predict(X_test)
-    score = r2_score(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
+    rmse = mean_squared_error(y_test, y_pred, squared=False)
     logger = logging.getLogger(__name__)
-    logger.info("Model has a coefficient R^2 of %.3f on test data.", score)
+    logger.info("Model has a coefficient R^2 of %.3f on test data.", r2)
+    logger.info("Model has a RMSE of %.3f on test data.", rmse)
