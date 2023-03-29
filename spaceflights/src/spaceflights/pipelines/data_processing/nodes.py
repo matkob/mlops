@@ -1,67 +1,34 @@
+from typing import Any, Dict
 import pandas as pd
 
 
-def _is_true(x: pd.Series) -> pd.Series:
-    return x == "t"
-
-
-def _parse_percentage(x: pd.Series) -> pd.Series:
-    x = x.str.replace("%", "")
-    x = x.astype(float) / 100
-    return x
-
-
-def _parse_money(x: pd.Series) -> pd.Series:
-    x = x.str.replace("$", "", regex=False).str.replace(",", "", regex=False)
-    x = x.astype(float)
-    return x
-
-
-def preprocess_companies(companies: pd.DataFrame) -> pd.DataFrame:
-    """Preprocesses the data for companies.
-
-    Args:
-        companies: Raw data.
-    Returns:
-        Preprocessed data, with `company_rating` converted to a float and
-        `iata_approved` converted to boolean.
+def enrich_order_book(order_book: pd.DataFrame, parameters: Dict[str, Any]) -> pd.DataFrame:
+    """Preprocesses the data for order book.
+    Note this is overly simplified problem with simple timeseries processing just for the purpose of the demo.
     """
-    companies["iata_approved"] = _is_true(companies["iata_approved"])
-    companies["company_rating"] = _parse_percentage(companies["company_rating"])
-    return companies
 
+    time_window = parameters["time_window"]
 
-def preprocess_shuttles(shuttles: pd.DataFrame) -> pd.DataFrame:
-    """Preprocesses the data for shuttles.
+    asks_n_bids = [c for c in order_book.columns if "asks" in c or "bids" in c]
 
-    Args:
-        shuttles: Raw data.
-    Returns:
-        Preprocessed data, with `price` converted to a float and `d_check_complete`,
-        `moon_clearance_complete` converted to boolean.
-    """
-    shuttles["d_check_complete"] = _is_true(shuttles["d_check_complete"])
-    shuttles["moon_clearance_complete"] = _is_true(shuttles["moon_clearance_complete"])
-    shuttles["price"] = _parse_money(shuttles["price"])
-    return shuttles
-
-
-def create_model_input_table(
-    shuttles: pd.DataFrame, companies: pd.DataFrame, reviews: pd.DataFrame
-) -> pd.DataFrame:
-    """Combines all data to create a model input table.
-
-    Args:
-        shuttles: Preprocessed data for shuttles.
-        companies: Preprocessed data for companies.
-        reviews: Raw data for reviews.
-    Returns:
-        Model input table.
-
-    """
-    rated_shuttles = shuttles.merge(reviews, left_on="id", right_on="shuttle_id")
-    model_input_table = rated_shuttles.merge(
-        companies, left_on="company_id", right_on="id"
+    df = (
+        order_book.sort_values(by="timestamp")
+        # After sorting timestamp is no longer needed
+        .drop(columns=["timestamp", "local_timestamp", "exchange", "symbol"])
+        # There should only be asks and bids in the dataset
+        [asks_n_bids].astype("float32")
     )
-    model_input_table = model_input_table.dropna()
-    return model_input_table
+    df["mid.price"] = (df["asks[0].price"] + df["bids[0].price"]) / 2
+
+    # shifting input data
+    for i in range(1, time_window + 1):
+        cols = [f"{i}_tick_{c}" for c in asks_n_bids]
+        df[cols] = df[asks_n_bids].shift(periods=i)
+
+    return df.drop(columns=asks_n_bids).dropna()
+
+
+def process_feature_names(order_book: pd.DataFrame) -> pd.DataFrame:
+    """Removes any unsupported characters from a dataset."""
+
+    return order_book.rename(mapper=lambda c: c.replace("[", "").replace("]", ""), axis=1)

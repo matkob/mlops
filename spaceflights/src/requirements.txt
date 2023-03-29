@@ -12,6 +12,7 @@ pytest-cov~=3.0
 pytest-mock>=1.7.1, <2.0
 pytest~=6.2
 scikit-learn~=1.0
+xgboost~=1.6.2
 kedro-vertexai==0.8.1
 kedro-docker==0.3.1
 kedro-mlflow

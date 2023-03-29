@@ -9,6 +9,16 @@
       "console": "integratedTerminal",
       "justMyCode": true,
       "args": ["code"]
+    },
+    {
+      "name": "Kedro run",
+      "type": "python",
+      "request": "launch",
+      "module": "kedro",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "args": ["run"],
+      "cwd": "${workspaceFolder}/spaceflights"
     }
   ]
 }
