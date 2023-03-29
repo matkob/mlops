@@ -21,7 +21,7 @@ resource "google_storage_bucket" "data_update_func" {
 resource "google_storage_bucket_object" "data_update_func" {
   name   = "archive.zip"
   bucket = google_storage_bucket.data_update_func.name
-  source = "../dataset/archive.zip"
+  source = "functions/data_update.zip"
 }
 
 resource "google_cloudfunctions_function" "data_update_func" {

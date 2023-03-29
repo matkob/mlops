@@ -2,13 +2,13 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Model train&test",
+      "name": "Doit code",
       "type": "python",
       "request": "launch",
-      "program": "model/model.py",
+      "module": "doit",
       "console": "integratedTerminal",
       "justMyCode": true,
-      "args": ["--data_dir", "model/data", "--data_file", "ob_snapshots.csv", "--time_window", "2"]
+      "args": ["code"]
     }
   ]
 }

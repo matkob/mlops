@@ -1,8 +1,10 @@
-from flask import escape
+import flask
+import markupsafe
 import functions_framework
 
-@functions_framework.http
-def update_dataset(request):
+
+@functions_framework.http  # type: ignore
+def update_dataset(request: flask.Request) -> str:
     """HTTP Cloud Function.
     Args:
         request (flask.Request): The request object.
@@ -15,10 +17,10 @@ def update_dataset(request):
     request_json = request.get_json(silent=True)
     request_args = request.args
 
-    if request_json and 'name' in request_json:
-        name = request_json['name']
-    elif request_args and 'name' in request_args:
-        name = request_args['name']
+    if request_json and "name" in request_json:
+        name = request_json["name"]
+    elif request_args and "name" in request_args:
+        name = request_args["name"]
     else:
-        name = 'World'
-    return 'Hello {}!'.format(escape(name))
+        name = "World"
+    return "Hello {}!".format(markupsafe.escape(name))

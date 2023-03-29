@@ -30,7 +30,9 @@ df = df[asks_n_bids]
 df = df.with_columns(pl.all().cast(pl.Float32))
 
 # adding target - mid price
-df = df.with_columns(((df["asks[0].price"] + df["bids[0].price"]) / 2).alias("mid.price"))
+df = df.with_columns(
+    ((df["asks[0].price"] + df["bids[0].price"]) / 2).alias("mid.price")
+)
 
 # shifting input data
 for i in range(1, args.time_window + 1):
@@ -47,7 +49,9 @@ df = df.drop_nulls()
 # Split data
 y = df[["mid.price"]]
 X = df.drop(columns="mid.price")
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=args.test_split, random_state=args.seed)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=args.test_split, random_state=args.seed
+)
 
 # Train model
 model = xgb.XGBRegressor()

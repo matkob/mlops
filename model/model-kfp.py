@@ -1,3 +1,6 @@
+# type: ignore
+# This model is deprecated, see the Kedro-based implementation - `spaceflights`
+
 import kfp
 import kfp.v2.dsl as dsl
 
@@ -9,13 +12,18 @@ def create_dataset(output_csv: dsl.Output[dsl.Dataset]):
     """
     import requests
 
+    # flake8: noqa: E501
     url = "https://datasets.tardis.dev/v1/deribit/book_snapshot_25/2020/04/01/BTC-PERPETUAL.csv.gz"
     with open(output_csv.path, "wb") as output_file:
         output_file.write(requests.get(url).content)
 
 
 @dsl.component(packages_to_install=["polars~=0.16.9"], base_image="python:3.10")
-def transform_dataset(input_csv: dsl.Input[dsl.Dataset], time_window: int, output_csv: dsl.Output[dsl.Dataset]):
+def transform_dataset(
+    input_csv: dsl.Input[dsl.Dataset],
+    time_window: int,
+    output_csv: dsl.Output[dsl.Dataset],
+):
     import polars as pl
 
     # TODO: increase memory resource limits and remove nrows limit
@@ -29,7 +37,9 @@ def transform_dataset(input_csv: dsl.Input[dsl.Dataset], time_window: int, outpu
     asks_n_bids = [c for c in df.columns if "asks" in c or "bids" in c]
     df = df[asks_n_bids].with_columns(pl.all().cast(pl.Float32))
     # adding target - mid price
-    df = df.with_columns(((df["asks[0].price"] + df["bids[0].price"]) / 2).alias("mid.price"))
+    df = df.with_columns(
+        ((df["asks[0].price"] + df["bids[0].price"]) / 2).alias("mid.price")
+    )
     # shifting input data
     for i in range(1, time_window + 1):
         cols = [f"{i}_tick_{c}" for c in asks_n_bids]
@@ -44,10 +54,19 @@ def transform_dataset(input_csv: dsl.Input[dsl.Dataset], time_window: int, outpu
     df.write_csv(output_csv.path)
 
 
-@dsl.component(packages_to_install=["polars~=0.16.9", "scikit-learn~=1.0.2"], base_image="python:3.10")
-def split_dataset(input_csv: dsl.Input[dsl.Dataset], test_split: float, seed: int, x_train_csv: dsl.Output[dsl.Dataset],
-                  y_train_csv: dsl.Output[dsl.Dataset], x_test_csv: dsl.Output[dsl.Dataset],
-                  y_test_csv: dsl.Output[dsl.Dataset]):
+@dsl.component(
+    packages_to_install=["polars~=0.16.9", "scikit-learn~=1.0.2"],
+    base_image="python:3.10",
+)
+def split_dataset(
+    input_csv: dsl.Input[dsl.Dataset],
+    test_split: float,
+    seed: int,
+    x_train_csv: dsl.Output[dsl.Dataset],
+    y_train_csv: dsl.Output[dsl.Dataset],
+    x_test_csv: dsl.Output[dsl.Dataset],
+    y_test_csv: dsl.Output[dsl.Dataset],
+):
     import polars as pl
     import numpy as np
     from sklearn.model_selection import train_test_split
@@ -55,7 +74,9 @@ def split_dataset(input_csv: dsl.Input[dsl.Dataset], test_split: float, seed: in
     df = pl.read_csv(input_csv.path, sep=",")
     y = df["mid.price"].to_numpy()
     X = df.drop(columns="mid.price").to_numpy()
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_split, random_state=seed)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=test_split, random_state=seed
+    )
 
     np.savetxt(x_train_csv.path, X_train, delimiter=",")
     np.savetxt(y_train_csv.path, y_train, delimiter=",")
@@ -63,10 +84,17 @@ def split_dataset(input_csv: dsl.Input[dsl.Dataset], test_split: float, seed: in
     np.savetxt(y_test_csv.path, y_test, delimiter=",")
 
 
-@dsl.component(packages_to_install=["xgboost~=1.6.2", "scikit-learn~=1.0.2"], base_image="python:3.10")
-def train_and_test_model(x_train_csv: dsl.Input[dsl.Dataset], y_train_csv: dsl.Input[dsl.Dataset],
-                         x_test_csv: dsl.Input[dsl.Dataset], y_test_csv: dsl.Input[dsl.Dataset],
-                         model_file: dsl.Output[dsl.Model]):
+@dsl.component(
+    packages_to_install=["xgboost~=1.6.2", "scikit-learn~=1.0.2"],
+    base_image="python:3.10",
+)
+def train_and_test_model(
+    x_train_csv: dsl.Input[dsl.Dataset],
+    y_train_csv: dsl.Input[dsl.Dataset],
+    x_test_csv: dsl.Input[dsl.Dataset],
+    y_test_csv: dsl.Input[dsl.Dataset],
+    model_file: dsl.Output[dsl.Model],
+):
     import numpy as np
     import xgboost as xgb
     import sklearn.metrics as metrics
@@ -94,15 +122,23 @@ def train_and_test_model(x_train_csv: dsl.Input[dsl.Dataset], y_train_csv: dsl.I
     model_file.metadata["Explained variance"] = explained_variance
 
 
-@dsl.pipeline(name="dummy-regression-model",
-              description="An example pipeline that trains a crypto price regression model.",
-              pipeline_root="gs://test-vertex-ai-datasets/kubeflow")
+@dsl.pipeline(
+    name="dummy-regression-model",
+    description="An example pipeline that trains a crypto price regression model.",
+    pipeline_root="gs://test-vertex-ai-datasets/kubeflow",
+)
 def add_pipeline(time_window: int = 2, test_split: float = 0.33, seed: int = 2):
     create_task = create_dataset()
     transform_task = transform_dataset(create_task.outputs["output_csv"], time_window)
     split_task = split_dataset(transform_task.outputs["output_csv"], test_split, seed)
-    train_and_test_model(split_task.outputs["x_train_csv"], split_task.outputs["y_train_csv"],
-                         split_task.outputs["x_test_csv"], split_task.outputs["y_test_csv"])
+    train_and_test_model(
+        split_task.outputs["x_train_csv"],
+        split_task.outputs["y_train_csv"],
+        split_task.outputs["x_test_csv"],
+        split_task.outputs["y_test_csv"],
+    )
 
 
-kfp.v2.compiler.Compiler().compile(pipeline_func=add_pipeline, package_path="pipeline.json")
+kfp.v2.compiler.Compiler().compile(
+    pipeline_func=add_pipeline, package_path="pipeline.json"
+)
