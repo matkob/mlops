@@ -27,7 +27,7 @@ def task_code():  # type: ignore
     }
 
 
-@task_params([{"name": "visualize", "default": False, "type": bool, "long": "visualize"}])  # type: ignore
+@task_params([{"name": "visualize", "default": False, "type": bool, "long": "visualize"}])  # type: ignore # noqa: E501
 def task_model(visualize: bool):
     local_mlflow_config = "forecasting_model/conf/local/mlflow.yml"
     local_credentials = "forecasting_model/conf/local/credentials.yml"
@@ -67,10 +67,10 @@ def task_model(visualize: bool):
         }
 
 
-def task_data():
+def task_data():  # type: ignore
     data_dir = "raw_data"
     data_file = "order_book.csv"
-    url = "https://datasets.tardis.dev/v1/binance/book_snapshot_5/2023/03/01/BTCUSDT.csv.gz"
+    url = "https://datasets.tardis.dev/v1/binance/book_snapshot_5/2023/03/01/BTCUSDT.csv.gz"  # noqa: E501
 
     yield {
         "name": "init",

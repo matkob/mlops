@@ -6,7 +6,8 @@ def enrich_order_book(
     order_book: pd.DataFrame, parameters: Dict[str, Any]
 ) -> pd.DataFrame:
     """Preprocesses the data for order book.
-    Note this is overly simplified problem with simple timeseries processing just for the purpose of the demo.
+    Note this is overly simplified problem with simple timeseries processing
+    just for the purpose of the demo.
     """
 
     time_window = parameters["time_window"]
