@@ -6,19 +6,19 @@ raw_data
 # Kedro
 
 # ignore all local configuration
-spaceflights/conf/local/**
-!spaceflights/conf/local/.gitkeep
+forecasting_model/conf/local/**
+!forecasting_model/conf/local/.gitkeep
 
 # ignore potentially sensitive credentials files
-spaceflights/conf/**/*credentials*
+forecasting_model/conf/**/*credentials*
 
 # ignore everything in the following folders
-spaceflights/data/**
-spaceflights/logs/**
+forecasting_model/data/**
+forecasting_model/logs/**
 
 # except their sub-folders
-!spaceflights/data/**/
-!spaceflights/logs/**/
+!forecasting_model/data/**/
+!forecasting_model/logs/**/
 
 # also keep all .gitkeep files
 !.gitkeep

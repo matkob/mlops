@@ -4,7 +4,7 @@ project_id: i-2r8v-y9cvkuz6-7kgq4ai8iwk1ie
 region: europe-west1
 run_config:
   # Name of the image to run as the pipeline steps
-  image: eu.gcr.io/i-2r8v-y9cvkuz6-7kgq4ai8iwk1ie/spaceflights-tutorial-mb:20230328
+  image: eu.gcr.io/i-2r8v-y9cvkuz6-7kgq4ai8iwk1ie/forecasting_model-tutorial-mb:20230328
 
   # Pull policy to be used for the steps. Use Always if you push the images
   # on the same tag, or Never if you use only local images
@@ -14,10 +14,10 @@ run_config:
   root: my_workshop_temp_123/mlops-webinar-demo
 
   # Prefix of Vertex AI pipeline run
-  experiment_name: spaceflights
+  experiment_name: forecasting_model
 
   # Name of the scheduled run, templated with the schedule parameters
-  scheduled_run_name: spaceflights
+  scheduled_run_name: forecasting_model
 
   # Optional service account to run vertex AI Pipeline with
   # service_account: pipelines-account@my-project.iam.gserviceaccount.com

@@ -40,7 +40,7 @@ loggers:
   kedro:
     level: INFO
 
-  spaceflights:
+  forecasting_model:
     level: INFO
 
 root:

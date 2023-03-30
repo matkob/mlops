@@ -1,6 +1,6 @@
 [tool.kedro]
-package_name = "spaceflights"
-project_name = "spaceflights"
+package_name = "forecasting_model"
+project_name = "forecasting_model"
 project_version = "0.18.4"
 
 [tool.isort]
@@ -9,7 +9,7 @@ profile = "black"
 [tool.pytest.ini_options]
 addopts = """
 --cov-report term-missing \
---cov src/spaceflights -ra"""
+--cov src/forecasting_model -ra"""
 
 [tool.coverage.report]
 fail_under = 0

@@ -2,7 +2,9 @@ from typing import Any, Dict
 import pandas as pd
 
 
-def enrich_order_book(order_book: pd.DataFrame, parameters: Dict[str, Any]) -> pd.DataFrame:
+def enrich_order_book(
+    order_book: pd.DataFrame, parameters: Dict[str, Any]
+) -> pd.DataFrame:
     """Preprocesses the data for order book.
     Note this is overly simplified problem with simple timeseries processing just for the purpose of the demo.
     """
@@ -31,4 +33,6 @@ def enrich_order_book(order_book: pd.DataFrame, parameters: Dict[str, Any]) -> p
 def process_feature_names(order_book: pd.DataFrame) -> pd.DataFrame:
     """Removes any unsupported characters from a dataset."""
 
-    return order_book.rename(mapper=lambda c: c.replace("[", "").replace("]", ""), axis=1)
+    return order_book.rename(
+        mapper=lambda c: c.replace("[", "").replace("]", ""), axis=1
+    )

@@ -1,8 +1,8 @@
-# spaceflights
+# forecasting_model
 
 ## Overview
 
-This is your new Kedro project for the [spaceflights tutorial](https://kedro.readthedocs.io/en/stable/tutorial/spaceflights_tutorial.html), which was generated using `Kedro 0.18.4`.
+This is your new Kedro project for the [forecasting_model tutorial](https://kedro.readthedocs.io/en/stable/tutorial/forecasting_model_tutorial.html), which was generated using `Kedro 0.18.4`.
 
 Take a look at the [Kedro documentation](https://kedro.readthedocs.io) to get started.
 

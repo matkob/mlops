@@ -23,7 +23,7 @@ def config_loader() -> ConfigLoader:
 @pytest.fixture
 def project_context(config_loader: ConfigLoader) -> KedroContext:
     return KedroContext(
-        package_name="spaceflights",
+        package_name="forecasting_model",
         project_path=Path.cwd(),
         config_loader=config_loader,
         hook_manager=_create_hook_manager(),

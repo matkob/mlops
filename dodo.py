@@ -29,10 +29,10 @@ def task_code():  # type: ignore
 
 @task_params([{"name": "visualize", "default": False, "type": bool, "long": "visualize"}])  # type: ignore
 def task_model(visualize: bool):
-    local_mlflow_config = "spaceflights/conf/local/mlflow.yml"
-    local_credentials = "spaceflights/conf/local/credentials.yml"
+    local_mlflow_config = "forecasting_model/conf/local/mlflow.yml"
+    local_credentials = "forecasting_model/conf/local/credentials.yml"
 
-    model_files = list(Path("spaceflights").glob("**/*.py")) + [
+    model_files = list(Path("forecasting_model").glob("**/*.py")) + [
         local_mlflow_config,
         local_credentials,
     ]
@@ -40,7 +40,7 @@ def task_model(visualize: bool):
     yield {
         "name": "init",
         "actions": [
-            CmdAction("kedro mlflow init", cwd="spaceflights"),
+            CmdAction("kedro mlflow init", cwd="forecasting_model"),
             CmdAction(f"touch {local_credentials}"),
         ],
         "targets": [local_mlflow_config, local_credentials],
@@ -50,20 +50,20 @@ def task_model(visualize: bool):
     yield {
         "name": "test",
         "file_dep": model_files,
-        "actions": [CmdAction("pytest", cwd="spaceflights")],
+        "actions": [CmdAction("pytest", cwd="forecasting_model")],
     }
 
     yield {
         "name": "run",
         "file_dep": model_files,
-        "actions": [CmdAction("kedro run", cwd="spaceflights")],
+        "actions": [CmdAction("kedro run", cwd="forecasting_model")],
     }
 
     if visualize:
         yield {
             "name": "visualize",
             "file_dep": model_files,
-            "actions": [CmdAction("kedro viz", cwd="spaceflights")],
+            "actions": [CmdAction("kedro viz", cwd="forecasting_model")],
         }
 
 
@@ -77,7 +77,7 @@ def task_data():
         "targets": [data_dir],
         "actions": [CmdAction(f"mkdir {data_dir} || echo 'Dir already present'")],
         "uptodate": [run_once],
-        "verbosity": 0
+        "verbosity": 0,
     }
 
     yield {
@@ -86,14 +86,22 @@ def task_data():
         "actions": [CmdAction(f"curl {url} | gunzip -c > {data_dir}/{data_file}")],
         "uptodate": [run_once],
         "verbosity": 0,
-        "task_dep": ["data:init"]
+        "task_dep": ["data:init"],
     }
 
     yield {
         "name": "prepare",
-        "targets": [f"infrastructure/data/{data_file}", f"spaceflights/data/01_raw/{data_file}"],
-        "actions": [CmdAction(f"cp {data_dir}/{data_file} infrastructure/data/{data_file}"), CmdAction(f"cp {data_dir}/{data_file} spaceflights/data/01_raw/{data_file}")],
-        "task_dep": ["data:download"]
+        "targets": [
+            f"infrastructure/data/{data_file}",
+            f"forecasting_model/data/01_raw/{data_file}",
+        ],
+        "actions": [
+            CmdAction(f"cp {data_dir}/{data_file} infrastructure/data/{data_file}"),
+            CmdAction(
+                f"cp {data_dir}/{data_file} forecasting_model/data/01_raw/{data_file}"
+            ),
+        ],
+        "task_dep": ["data:download"],
     }
 
     # TODO: Add a step to inject fabricated target values

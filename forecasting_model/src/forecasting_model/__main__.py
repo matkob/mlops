@@ -1,5 +1,5 @@
-"""spaceflights file for ensuring the package is executable
-as `spaceflights` and `python -m spaceflights`
+"""forecasting_model file for ensuring the package is executable
+as `forecasting_model` and `python -m forecasting_model`
 """
 import importlib
 from pathlib import Path

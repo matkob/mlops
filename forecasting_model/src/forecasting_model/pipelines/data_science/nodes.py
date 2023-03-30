@@ -22,7 +22,11 @@ def split_data(
     X = data.drop(columns="mid.price")
     y = data["mid.price"]
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=parameters["test_size"], random_state=parameters["random_state"]
+        X,
+        y,
+        test_size=parameters["test_size"],
+        random_state=parameters["random_state"],
+        shuffle=False,
     )
     return X_train, X_test, y_train, y_test
 
@@ -53,20 +57,23 @@ def evaluate_model(
         y_test: Testing data for price.
     """
     y_pred = regressor.predict(X)
-    
+
     max_error = metrics.max_error(y, y_pred)
     median_error = metrics.median_absolute_error(y, y_pred)
     mse_error = metrics.mean_squared_error(y, y_pred)
     explained_variance = metrics.explained_variance_score(y, y_pred)
-    
+
     logger = logging.getLogger(__name__)
     logger.info("Model has a max error of %.3f on %s data.", max_error, stage)
     logger.info("Model has a median error of %.3f on %s data.", median_error, stage)
     logger.info("Model has a mse error of %.3f on %s data.", mse_error, stage)
-    logger.info("Model has an explained variance score of %.3f on %s data.", explained_variance, stage)
-    
+    logger.info(
+        "Model has an explained variance score of %.3f on %s data.",
+        explained_variance,
+        stage,
+    )
+
     mlflow.log_metric(f"{stage}_max_error", max_error)
     mlflow.log_metric(f"{stage}_median_error", median_error)
     mlflow.log_metric(f"{stage}_mse_error", mse_error)
     mlflow.log_metric(f"{stage}_explained_variance", explained_variance)
-
