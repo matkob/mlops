@@ -1,6 +1,5 @@
 # Data
-model/data
-infrastructure/data
+infrastructure/data/**
 raw_data
 
 # Kedro
@@ -19,9 +18,6 @@ forecasting_model/logs/**
 # except their sub-folders
 !forecasting_model/data/**/
 !forecasting_model/logs/**/
-
-# also keep all .gitkeep files
-!.gitkeep
 
 # Common files
 
@@ -191,3 +187,6 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+# also keep all .gitkeep files
+!.gitkeep

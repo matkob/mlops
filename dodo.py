@@ -50,12 +50,14 @@ def task_model(visualize: bool):
     yield {
         "name": "test",
         "file_dep": model_files,
+        "task_dep": ["data:prepare"],
         "actions": [CmdAction("pytest", cwd="forecasting_model")],
     }
 
     yield {
         "name": "run",
         "file_dep": model_files,
+        "task_dep": ["data:prepare"],
         "actions": [CmdAction("kedro run", cwd="forecasting_model")],
     }
 
