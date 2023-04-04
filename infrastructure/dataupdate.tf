@@ -1,3 +1,34 @@
+resource "google_pubsub_topic" "dataset_update_topic" {
+  name = "dataset-update-${var.random_suffix}"
+  
+  # Minimum duration is 10 min
+  message_retention_duration = "610s"
+
+  labels = {
+    owner   = "matkob"
+    purpose = "mlops-demo"
+    type    = "mock"
+  }
+}
+
+resource "google_cloud_scheduler_job" "dataset_update_job" {
+  name        = "trigger-dataset-update-${var.random_suffix}"
+  description = "Produces an event triggering dataset update."
+  schedule    = "*/10 * * * *"
+
+  pubsub_target {
+    # Topic name is exprected to be in the full format, so equal to the id
+    topic_name = google_pubsub_topic.dataset_update_topic.id
+    attributes = {
+      source_bucket = google_storage_bucket.datalake.url
+      source_object = google_storage_bucket_object.timeseries_data.name
+      target_bucket = google_storage_bucket.dataset.url
+    }
+  }
+
+  depends_on = [google_project_service.cloud_scheduler]
+}
+
 resource "google_storage_bucket" "data_update_func" {
   name          = "data-update-func-${var.random_suffix}"
   location      = var.region
@@ -29,10 +60,9 @@ resource "google_storage_bucket_object" "data_update_func" {
 resource "google_cloudfunctions_function" "data_update_func" {
   name        = "data-update-func-${var.random_suffix}"
   description = "Function posting a new version of the timeseries dataset"
-  runtime     = "python311"
+  runtime     = "python310"
 
   available_memory_mb = 1024
-  trigger_http        = true
   entry_point         = "update_dataset"
   max_instances       = 1
   timeout             = 60
@@ -50,9 +80,10 @@ resource "google_cloudfunctions_function" "data_update_func" {
     GOOGLE_FUNCTION_SOURCE = "data_update.py"
   }
 
-  depends_on = [google_project_service.cloud_functions]
-}
+  event_trigger {
+    event_type = "providers/cloud.pubsub/eventTypes/topic.publish"
+    resource = google_pubsub_topic.dataset_update_topic.id
+  }
 
-output "data_update_func" {
-  value = google_cloudfunctions_function.data_update_func.https_trigger_url
+  depends_on = [google_project_service.cloud_functions]
 }
