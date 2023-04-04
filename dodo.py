@@ -7,22 +7,28 @@ DOIT_CONFIG = {"verbosity": 2}
 
 
 def task_code():  # type: ignore
-    python_files = list(Path(".").glob("**/*.py"))
+    code_files = list(Path(".").glob("**/*.(py|tf)"))
     yield {
         "name": "format",
-        "file_dep": python_files,
-        "actions": [CmdAction("black .")],
+        "file_dep": code_files,
+        "actions": [
+            CmdAction("black ."),
+            CmdAction("terraform fmt -recursive", cwd="infrastructure"),
+        ],
     }
 
     yield {
         "name": "stylecheck",
-        "file_dep": python_files,
-        "actions": [CmdAction("flake8 .")],
+        "file_dep": code_files,
+        "actions": [
+            CmdAction("flake8 ."),
+            CmdAction("terraform fmt -check -recursive", cwd="infrastructure"),
+        ],
     }
 
     yield {
         "name": "typecheck",
-        "file_dep": python_files,
+        "file_dep": code_files,
         "actions": [CmdAction("mypy . --strict --ignore-missing-imports")],
     }
 

@@ -1,10 +1,5 @@
-resource "google_project_service" "vertex_ai" {
-  service            = "aiplatform.googleapis.com"
-  disable_on_destroy = false
-}
-
 resource "google_storage_bucket" "dataset" {
-  name          = "dataset-${random_id.suffix.hex}"
+  name          = "dataset-${var.random_suffix}"
   location      = var.region
   force_destroy = true
 

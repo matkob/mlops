@@ -19,6 +19,9 @@ forecasting_model/logs/**
 !forecasting_model/data/**/
 !forecasting_model/logs/**/
 
+# Infrastructure code
+infrastructure/functions/*zip
+
 # Common files
 
 # IntelliJ
