@@ -1,6 +1,6 @@
 resource "google_pubsub_topic" "dataset_update_topic" {
   name = "dataset-update-${var.random_suffix}"
-  
+
   # Minimum duration is 10 min
   message_retention_duration = "610s"
 
@@ -20,9 +20,9 @@ resource "google_cloud_scheduler_job" "dataset_update_job" {
     # Topic name is exprected to be in the full format, so equal to the id
     topic_name = google_pubsub_topic.dataset_update_topic.id
     attributes = {
-      source_bucket = google_storage_bucket.datalake.url
+      source_bucket = google_storage_bucket.datalake.name
       source_object = google_storage_bucket_object.timeseries_data.name
-      target_bucket = google_storage_bucket.dataset.url
+      target_bucket = google_storage_bucket.dataset.name
     }
   }
 
@@ -47,7 +47,8 @@ resource "google_storage_bucket" "data_update_func" {
 
 data "archive_file" "data_update_func_code" {
   type        = "zip"
-  source_file = "functions/data_update.py"
+  source_dir  = "functions/"
+  excludes    = ["data_update.zip"]
   output_path = "functions/data_update.zip"
 }
 
@@ -82,7 +83,15 @@ resource "google_cloudfunctions_function" "data_update_func" {
 
   event_trigger {
     event_type = "providers/cloud.pubsub/eventTypes/topic.publish"
-    resource = google_pubsub_topic.dataset_update_topic.id
+    resource   = google_pubsub_topic.dataset_update_topic.id
+  }
+
+  # Coupling function's lifecycle with the code will trigger proper redeployment on code updates
+  # This will not be the case otherwise
+  lifecycle {
+    replace_triggered_by = [
+      google_storage_bucket_object.data_update_func.md5hash
+    ]
   }
 
   depends_on = [google_project_service.cloud_functions]

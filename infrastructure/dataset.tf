@@ -5,6 +5,16 @@ resource "google_storage_bucket" "dataset" {
 
   storage_class = "STANDARD"
 
+  # This bucket's size will increase over time, lifecycle prevents it from swelling too much
+  lifecycle_rule {
+    condition {
+      age = 1
+    }
+    action {
+      type = "Delete"
+    }
+  }
+
   labels = {
     owner   = "matkob"
     purpose = "mlops-demo"

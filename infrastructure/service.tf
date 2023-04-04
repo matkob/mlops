@@ -9,6 +9,6 @@ resource "google_project_service" "vertex_ai" {
 }
 
 resource "google_project_service" "cloud_scheduler" {
-  service = "cloudscheduler.googleapis.com"
+  service            = "cloudscheduler.googleapis.com"
   disable_on_destroy = false
 }
