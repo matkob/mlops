@@ -20,7 +20,7 @@ forecasting_model/logs/**
 !forecasting_model/logs/**/
 
 # Infrastructure code
-infrastructure/functions/*zip
+infrastructure/**/*zip
 
 # Common files
 
