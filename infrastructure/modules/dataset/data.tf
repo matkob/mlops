@@ -1,5 +1,5 @@
-resource "google_storage_bucket" "data_mock" {
-  name          = "data-mock-${var.random_suffix}"
+resource "google_storage_bucket" "training_data" {
+  name          = "training-data-${var.random_suffix}"
   location      = var.region
   force_destroy = true
 
@@ -8,7 +8,6 @@ resource "google_storage_bucket" "data_mock" {
   labels = {
     owner   = "matkob"
     purpose = "mlops-demo"
-    type    = "mock"
   }
 
   uniform_bucket_level_access = true
@@ -16,8 +15,8 @@ resource "google_storage_bucket" "data_mock" {
   depends_on = [google_project_service.storage]
 }
 
-resource "google_storage_bucket_object" "timeseries_data" {
-  name   = "static/order_book.csv"
+resource "google_storage_bucket_object" "initial" {
+  name   = "order_book.csv"
   source = "${path.root}/data/order_book.csv"
-  bucket = google_storage_bucket.data_mock.name
+  bucket = google_storage_bucket.training_data.name
 }

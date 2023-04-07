@@ -21,9 +21,3 @@ variable "random_suffix" {
   default     = "568de2a"
   description = "Element randomizing some components' names"
 }
-
-variable "timeseries_data_url" {
-  type        = string
-  default     = "https://datasets.tardis.dev/v1/binance/book_snapshot_5/2023/03/01/BTCUSDT.csv.gz"
-  description = "URL of timeseries data used as source of data in this example project"
-}

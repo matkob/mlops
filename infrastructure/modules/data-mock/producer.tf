@@ -1,5 +1,5 @@
 resource "google_pubsub_topic" "mocked_data" {
-  name = "mocked-data-${var.random_suffix}"
+  name = var.order_book_updates_topic
 
   # Minimum duration is 10 min
   message_retention_duration = "610s"
@@ -25,7 +25,7 @@ resource "google_storage_bucket_object" "data_mock_function_code" {
   source = data.archive_file.function_code.output_path
 }
 
-resource "google_cloudfunctions_function" "data_mock_function" {
+resource "google_cloudfunctions_function" "data_mock" {
   name        = "data-mock-${var.random_suffix}"
   description = "Function producing mocked data"
   runtime     = "python310"
@@ -46,6 +46,13 @@ resource "google_cloudfunctions_function" "data_mock_function" {
 
   build_environment_variables = {
     GOOGLE_FUNCTION_SOURCE = "mock_data.py"
+  }
+
+  environment_variables = {
+    SOURCE_BUCKET = google_storage_bucket.data_mock.name
+    SOURCE_OBJECT = google_storage_bucket_object.timeseries_data.name
+    PERIOD        = "10m"
+    SINK          = google_pubsub_topic.mocked_data.id
   }
 
   event_trigger {

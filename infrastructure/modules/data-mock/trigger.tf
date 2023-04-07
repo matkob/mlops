@@ -22,12 +22,9 @@ resource "google_cloud_scheduler_job" "data_mock_trigger_job" {
     # Topic name is exprected to be in the full format, so equal to the id
     topic_name = google_pubsub_topic.data_mock_trigger.id
     attributes = {
-      source_bucket = google_storage_bucket.data_mock.name
-      source_object = google_storage_bucket_object.timeseries_data.name
-      period        = "10m"
-      sink          = google_pubsub_topic.mocked_data.id
+      count = "100"
     }
   }
 
-  depends_on = [google_project_service.scheduler, google_project_service.pubsub]
+  depends_on = [google_project_service.scheduler]
 }
