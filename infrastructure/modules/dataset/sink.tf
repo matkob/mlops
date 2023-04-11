@@ -31,6 +31,7 @@ data "google_pubsub_topic" "order_book_topic" {
   name = var.order_book_updates_topic
 }
 
+# TODO: replace with BigQuery subscription
 resource "google_cloudfunctions_function" "sink" {
   name        = "sink-${var.random_suffix}"
   description = "Function consuming online order book data and storing it in BigQuery."
@@ -71,5 +72,8 @@ resource "google_cloudfunctions_function" "sink" {
     ]
   }
 
-  depends_on = [google_project_service.functions]
+  depends_on = [
+    google_project_service.functions,
+    google_project_service.build
+  ]
 }

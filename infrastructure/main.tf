@@ -16,4 +16,6 @@ module "dataset" {
   random_suffix = var.random_suffix
 
   order_book_updates_topic = "order-book-${var.random_suffix}"
+
+  depends_on = [module.data_mock]
 }

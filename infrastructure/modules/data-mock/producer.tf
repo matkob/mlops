@@ -68,5 +68,8 @@ resource "google_cloudfunctions_function" "data_mock" {
     ]
   }
 
-  depends_on = [google_project_service.functions]
+  depends_on = [
+    google_project_service.functions,
+    google_project_service.build
+  ]
 }
