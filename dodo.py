@@ -80,6 +80,19 @@ def task_data():  # type: ignore
     data_file = "order_book.csv"
     url = "https://datasets.tardis.dev/v1/binance/book_snapshot_5/2023/03/01/BTCUSDT.csv.gz"  # noqa: E501
 
+    def rename_columns():
+        import pandas as pd
+
+        def fix_column_name(column: str):
+            return (
+                column
+                    .replace("[", "_")
+                    .replace("].", "_")
+            )
+        
+        f = f"{data_dir}/{data_file}"
+        pd.read_csv(f).rename(columns=fix_column_name).to_csv(f, index=False)
+
     yield {
         "name": "init",
         "targets": [data_dir],
@@ -104,10 +117,9 @@ def task_data():  # type: ignore
             f"forecasting_model/data/01_raw/{data_file}",
         ],
         "actions": [
+            (rename_columns,),
             CmdAction(f"cp {data_dir}/{data_file} infrastructure/data/{data_file}"),
-            CmdAction(
-                f"cp {data_dir}/{data_file} forecasting_model/data/01_raw/{data_file}"
-            ),
+            CmdAction(f"cp {data_dir}/{data_file} forecasting_model/data/01_raw/{data_file}"),
         ],
         "task_dep": ["data:download"],
     }

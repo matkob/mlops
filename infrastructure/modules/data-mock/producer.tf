@@ -1,16 +1,27 @@
+resource "google_pubsub_schema" "order_book" {
+  name = "order-book-${var.random_suffix}"
+  type = "AVRO"
+  definition = file("${path.root}/schema/order_book.avro.avsc")
+
+  depends_on = [google_project_service.pubsub]
+}
+
 resource "google_pubsub_topic" "mocked_data" {
-  name = var.order_book_updates_topic
+  name = "order-book-${var.random_suffix}"
 
   # Minimum duration is 10 min
   message_retention_duration = "610s"
+
+  schema_settings {
+    schema = google_pubsub_schema.order_book.id
+    encoding = "JSON"
+  }
 
   labels = {
     owner   = "matkob"
     purpose = "mlops-demo"
     type    = "mock"
   }
-
-  depends_on = [google_project_service.pubsub]
 }
 
 data "archive_file" "function_code" {

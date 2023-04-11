@@ -3,5 +3,5 @@ output "bucket" {
 }
 
 output "topic" {
-  value = google_pubsub_topic.mocked_data.id
+  value = google_pubsub_topic.mocked_data
 }

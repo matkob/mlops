@@ -21,6 +21,7 @@ resource "google_bigquery_table" "initial" {
 
   external_data_configuration {
     autodetect    = true
+    schema        = file("${path.root}/schema/order_book.bigquery.json")
     source_format = "CSV"
     compression   = "NONE"
 
@@ -28,6 +29,9 @@ resource "google_bigquery_table" "initial" {
       "${google_storage_bucket.training_data.url}/${google_storage_bucket_object.initial.name}"
     ]
   }
+
+  # Set for convenient development, shouldn't be used in production environment.
+  deletion_protection = false
 
   labels = {
     owner   = "matkob"
@@ -40,16 +44,7 @@ resource "google_bigquery_table" "live" {
   description = "This table contains live production data. It's dynamic and constantly updated."
   dataset_id  = google_bigquery_dataset.order_book.dataset_id
 
-  schema = <<EOF
-[
-  {
-    "name": "data",
-    "type": "STRING",
-    "mode": "NULLABLE",
-    "description": "Live order book data"
-  }
-]
-EOF
+  schema = file("${path.root}/schema/order_book.bigquery.json")
 
   time_partitioning {
     # 2 Days
@@ -72,23 +67,28 @@ data "google_project" "project" {
 
 resource "google_project_iam_member" "viewer" {
   project = data.google_project.project.project_id
-  role   = "roles/bigquery.metadataViewer"
-  member = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-pubsub.iam.gserviceaccount.com"
+  role    = "roles/bigquery.metadataViewer"
+  member  = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-pubsub.iam.gserviceaccount.com"
 }
 
 resource "google_project_iam_member" "editor" {
   project = data.google_project.project.project_id
-  role   = "roles/bigquery.dataEditor"
-  member = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-pubsub.iam.gserviceaccount.com"
+  role    = "roles/bigquery.dataEditor"
+  member  = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-pubsub.iam.gserviceaccount.com"
 }
 
-resource "google_pubsub_subscription" "example" {
+resource "google_pubsub_subscription" "live_order_book_sink" {
   name  = "live-data-subscription-${var.random_suffix}"
   topic = var.order_book_updates_topic
 
   bigquery_config {
-    table = "${var.project_id}.${google_bigquery_dataset.order_book.dataset_id}.${google_bigquery_table.live.table_id}"
+    table            = "${var.project_id}.${google_bigquery_dataset.order_book.dataset_id}.${google_bigquery_table.live.table_id}"
     use_topic_schema = true
+  }
+
+  labels = {
+    owner   = "matkob"
+    purpose = "mlops-demo"
   }
 
   depends_on = [google_project_iam_member.viewer, google_project_iam_member.editor]
