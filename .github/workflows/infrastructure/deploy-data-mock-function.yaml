@@ -1,5 +1,8 @@
+name: Deploy mock-data function
+
 jobs:
-  deploy:
+  Deploy-Mock-Data-Function:
+    runs-on: ubuntu-latest
     steps:
     - uses: 'actions/checkout@v3'
 
