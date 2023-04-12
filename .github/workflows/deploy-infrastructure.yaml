@@ -2,9 +2,6 @@ name: Deploy infrastructure
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-    - 'infrastructure/modules/data-mock/python/**'
 
 env:
   # Appended to all the infrastructure components
@@ -17,6 +14,9 @@ jobs:
     defaults:
       run:
         working-directory: 'infrastructure'
+    outputs:
+      data_mock_trigger: '${{ steps.get_outputs.outputs.trigger_topic }}'
+      data_mock_payload: '${{ steps.get_outputs.outputs.payload_topic }}'
     steps:
     - uses: 'actions/checkout@v3'
 
@@ -33,6 +33,8 @@ jobs:
     
     - name: 'Set up Terraform'
       uses: 'hashicorp/setup-terraform@v2'
+      with:
+        terraform_wrapper: false
     
     - name: 'Set up Cloud SDK'
       uses: 'google-github-actions/setup-gcloud@v1'
@@ -67,12 +69,25 @@ jobs:
     - name: 'Plan infrastructure'
       run: 'terraform plan -out=tfplan -input=false'
 
-    # - name: Apply infrastructure
-    #   run: 'terraform apply -input=false tfplan'
+    - name: 'Apply infrastructure'
+      run: 'terraform apply -input=false tfplan'
+
+    - id: 'get_outputs'
+      name: 'Save Terraform outputs'
+      run: |
+        set -euo pipefail
+
+        echo "trigger_topic=$(terraform output -raw trigger_topic)" >> "$GITHUB_OUTPUT"
+        echo "payload_topic=$(terraform output -raw payload_topic)" >> "$GITHUB_OUTPUT"
+
 
   deploy-functions:
     name: 'Deploy Cloud Functions' 
     runs-on: 'ubuntu-latest'
+    needs: 'deploy-infra'
+    env:
+      TRIGGER_TOPIC: '${{ needs.deploy-infra.outputs.data_mock_trigger }}'
+      PAYLOAD_TOPIC: '${{ needs.deploy-infra.outputs.data_mock_payload }}'
     steps:
     - uses: 'actions/checkout@v3'
 
@@ -89,17 +104,16 @@ jobs:
     - name: 'Deploy Cloud Function'
       uses: 'google-github-actions/deploy-cloud-functions@v1'
       with:
-        name: 'data-mock-568de2'
+        name: 'data-mock-${{ env.RANDOM_SUFFIX }}'
         description: 'Function producing mocked data'
         runtime: 'python310'
         entry_point: 'produce'
         memory_mb: 1024
         region: 'europe-west1'
-        env_vars: 'TOPIC=projects/mlops-383318/topics/order-book-568de2,COUNT=100'
+        env_vars: 'TOPIC=${{ env.PAYLOAD_TOPIC }},COUNT=100'
         labels: 'owner=matkob,purpose=mlops-demo,type=mock'
-        source_dir: 'infrastructure/modules/data-mock/python'
-        timeout: 120
+        source_dir: 'infrastructure/functions/data-mock'
+        timeout: 10
         max_instances: 1
         event_trigger_type: 'providers/cloud.pubsub/eventTypes/topic.publish'
-        event_trigger_resource: 'projects/mlops-383318/topics/data-mock-trigger-568de2'
-        build_environment_variables: 'GOOGLE_FUNCTION_SOURCE=mock_data.py'
+        event_trigger_resource: '${{ env.TRIGGER_TOPIC }}'

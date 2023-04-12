@@ -10,7 +10,7 @@ def task_code():
     code_files = list(Path(".").glob("**/*.(py|tf)"))
     project_roots = [
         "forecasting_model",
-        "infrastructure/modules/data-mock/python",
+        "infrastructure/functions/data-mock",
     ]
 
     yield {
@@ -113,12 +113,12 @@ def task_data():
     def rename_columns():
         import pandas as pd
 
-        def fix_column_name(column: str):
+        def map_column(column: str):
             return column.replace("[", "_").replace("].", "_")
 
         file_in = f"{data_dir}/{data_file}.raw"
         file_out = f"{data_dir}/{data_file}"
-        pd.read_csv(file_in).rename(columns=fix_column_name).to_csv(file_out, index=False)
+        pd.read_csv(file_in).rename(columns=map_column).to_csv(file_out, index=False)
 
     yield {
         "name": "process",
