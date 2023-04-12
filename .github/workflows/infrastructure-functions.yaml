@@ -1,6 +1,7 @@
 name: Deploy mock-data function
 
 on:
+  workflow_dispatch:
   push:
     paths:
     - 'infrastructure/modules/data-mock/python/**'
