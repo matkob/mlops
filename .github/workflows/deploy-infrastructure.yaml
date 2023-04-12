@@ -20,6 +20,11 @@ jobs:
     steps:
     - uses: 'actions/checkout@v3'
 
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
     - name: 'Authenticate to Google Cloud'
       uses: 'google-github-actions/auth@v1'
       with:
@@ -43,6 +48,18 @@ jobs:
         echo "project_id = \"$GCLOUD_PROJECT\"" >> terraform.tfvars
         echo "project_number = \"$PROJECT_NUMBER\"" >> terraform.tfvars
         echo "random_suffix = \"$RANDOM_SUFFIX\"" >> terraform.tfvars
+
+    - name: 'Install Python dependencies'
+      run: |
+        set -euo pipefail
+
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+      working-directory: '.'
+
+    - name: 'Run doit'
+      run: 'doit'
+      working-directory: '.'
 
     - name: 'Initialize Terraform'
       run: 'terraform init -input=false'
