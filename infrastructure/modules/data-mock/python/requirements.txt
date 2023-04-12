@@ -1,3 +1,4 @@
 google-cloud-pubsub~=2.15.2
 google-cloud-logging~=3.5.0
 pandas~=1.5.3
+numpy~=1.23.5

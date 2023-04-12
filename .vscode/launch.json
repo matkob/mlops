@@ -19,6 +19,16 @@
       "justMyCode": true,
       "args": ["run"],
       "cwd": "${workspaceFolder}/forecasting_model"
+    },
+    {
+      "name": "Debug mock data",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "args": [],
+      "cwd": "${workspaceFolder}/infrastructure/modules/data-mock"
     }
   ]
 }

@@ -1,22 +1,22 @@
 [
   {
     "name": "exchange",
-    "mode": "REQUIRED",
+    "mode": "NULLABLE",
     "type": "STRING"
   },
   {
     "name": "symbol",
-    "mode": "REQUIRED",
+    "mode": "NULLABLE",
     "type": "STRING"
   },
   {
     "name": "timestamp",
-    "mode": "REQUIRED",
+    "mode": "NULLABLE",
     "type": "INT64"
   },
   {
     "name": "local_timestamp",
-    "mode": "REQUIRED",
+    "mode": "NULLABLE",
     "type": "INT64"
   },
   {

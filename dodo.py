@@ -6,8 +6,13 @@ from doit import task_params
 DOIT_CONFIG = {"verbosity": 2}
 
 
-def task_code():  # type: ignore
+def task_code():
     code_files = list(Path(".").glob("**/*.(py|tf)"))
+    project_roots = [
+        "forecasting_model",
+        "infrastructure/modules/data-mock/python",
+    ]
+
     yield {
         "name": "format",
         "file_dep": code_files,
@@ -29,7 +34,10 @@ def task_code():  # type: ignore
     yield {
         "name": "typecheck",
         "file_dep": code_files,
-        "actions": [CmdAction("mypy . --strict --ignore-missing-imports")],
+        "actions": [
+            CmdAction(f"mypy {path} --strict --ignore-missing-imports")
+            for path in project_roots
+        ],
     }
 
 
@@ -75,7 +83,7 @@ def task_model(visualize: bool):
         }
 
 
-def task_data():  # type: ignore
+def task_data():
     data_dir = "raw_data"
     data_file = "order_book.csv"
     url = "https://datasets.tardis.dev/v1/binance/book_snapshot_5/2023/03/01/BTCUSDT.csv.gz"  # noqa: E501
@@ -84,12 +92,8 @@ def task_data():  # type: ignore
         import pandas as pd
 
         def fix_column_name(column: str):
-            return (
-                column
-                    .replace("[", "_")
-                    .replace("].", "_")
-            )
-        
+            return column.replace("[", "_").replace("].", "_")
+
         f = f"{data_dir}/{data_file}"
         pd.read_csv(f).rename(columns=fix_column_name).to_csv(f, index=False)
 
@@ -119,9 +123,9 @@ def task_data():  # type: ignore
         "actions": [
             (rename_columns,),
             CmdAction(f"cp {data_dir}/{data_file} infrastructure/data/{data_file}"),
-            CmdAction(f"cp {data_dir}/{data_file} forecasting_model/data/01_raw/{data_file}"),
+            CmdAction(
+                f"cp {data_dir}/{data_file} forecasting_model/data/01_raw/{data_file}"
+            ),
         ],
         "task_dep": ["data:download"],
     }
-
-    # TODO: Add a step to inject fabricated target values

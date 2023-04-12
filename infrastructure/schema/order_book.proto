@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+message OrderBook {
+  string exchange = 1;
+  string symbol = 2;
+  int64 timestamp = 3;
+  int64 local_timestamp = 4;
+  double asks_0_price = 5;
+  double asks_0_amount = 6;
+  double bids_0_price = 7;
+  double bids_0_amount = 8;
+  double asks_1_price = 9;
+  double asks_1_amount = 10;
+  double bids_1_price = 11;
+  double bids_1_amount = 12;
+  double asks_2_price = 13;
+  double asks_2_amount = 14;
+  double bids_2_price = 15;
+  double bids_2_amount = 16;
+  double asks_3_price = 17;
+  double asks_3_amount = 18;
+  double bids_3_price = 19;
+  double bids_3_amount = 20;
+  double asks_4_price = 21;
+  double asks_4_amount = 22;
+  double bids_4_price = 23;
+  double bids_4_amount = 24;
+}

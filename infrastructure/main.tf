@@ -4,7 +4,7 @@ module "data_mock" {
   region        = var.region
   random_suffix = var.random_suffix
 
-  trigger_schedule         = "*/10 * * * *"
+  trigger_schedule = "*/10 * * * *"
 }
 
 module "dataset" {
