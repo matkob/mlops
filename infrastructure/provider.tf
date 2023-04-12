@@ -14,8 +14,8 @@ terraform {
   }
 
   backend "gcs" {
-   bucket  = "terraform-state-568de2"
- }
+    bucket = "terraform-state-568de2"
+  }
 }
 
 provider "google" {

@@ -57,8 +57,8 @@ jobs:
         pip install -r requirements.txt
       working-directory: '.'
 
-    - name: 'Run doit'
-      run: 'doit'
+    - name: 'Set up local data'
+      run: 'doit data'
       working-directory: '.'
 
     - name: 'Initialize Terraform'
