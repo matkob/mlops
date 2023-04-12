@@ -13,8 +13,3 @@ variable "trigger_schedule" {
   default     = "*/10 * * * *"
   description = "Cron-like specification for how often mocked data will be published"
 }
-
-variable "order_book_updates_topic" {
-  type        = string
-  description = "Name of the topic containing live order book updates"
-}

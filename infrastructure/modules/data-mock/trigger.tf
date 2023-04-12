@@ -2,7 +2,7 @@ resource "google_pubsub_topic" "data_mock_trigger" {
   name = "data-mock-trigger-${var.random_suffix}"
 
   # Minimum duration is 10 min
-  message_retention_duration = "610s"
+  message_retention_duration = "600s"
 
   labels = {
     owner   = "matkob"
@@ -22,7 +22,7 @@ resource "google_cloud_scheduler_job" "data_mock_trigger_job" {
     # Topic name is exprected to be in the full format, so equal to the id
     topic_name = google_pubsub_topic.data_mock_trigger.id
     attributes = {
-      count = "100"
+      schedule = var.trigger_schedule
     }
   }
 

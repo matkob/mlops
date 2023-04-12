@@ -18,6 +18,6 @@ variable "zone" {
 
 variable "random_suffix" {
   type        = string
-  default     = "568de2a"
+  default     = "568de2"
   description = "Element randomizing some components' names"
 }

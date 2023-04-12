@@ -1,0 +1,122 @@
+[
+  {
+    "name": "exchange",
+    "mode": "NULLABLE",
+    "type": "STRING"
+  },
+  {
+    "name": "symbol",
+    "mode": "NULLABLE",
+    "type": "STRING"
+  },
+  {
+    "name": "timestamp",
+    "mode": "NULLABLE",
+    "type": "INT64"
+  },
+  {
+    "name": "local_timestamp",
+    "mode": "NULLABLE",
+    "type": "INT64"
+  },
+  {
+    "name": "asks_0_price",
+    "mode": "NULLABLE",
+    "type": "FLOAT64"
+  },
+  {
+    "name": "asks_0_amount",
+    "mode": "NULLABLE",
+    "type": "FLOAT64"
+  },
+  {
+    "name": "bids_0_price",
+    "mode": "NULLABLE",
+    "type": "FLOAT64"
+  },
+  {
+    "name": "bids_0_amount",
+    "mode": "NULLABLE",
+    "type": "FLOAT64"
+  },
+  {
+    "name": "asks_1_price",
+    "mode": "NULLABLE",
+    "type": "FLOAT64"
+  },
+  {
+    "name": "asks_1_amount",
+    "mode": "NULLABLE",
+    "type": "FLOAT64"
+  },
+  {
+    "name": "bids_1_price",
+    "mode": "NULLABLE",
+    "type": "FLOAT64"
+  },
+  {
+    "name": "bids_1_amount",
+    "mode": "NULLABLE",
+    "type": "FLOAT64"
+  },
+  {
+    "name": "asks_2_price",
+    "mode": "NULLABLE",
+    "type": "FLOAT64"
+  },
+  {
+    "name": "asks_2_amount",
+    "mode": "NULLABLE",
+    "type": "FLOAT64"
+  },
+  {
+    "name": "bids_2_price",
+    "mode": "NULLABLE",
+    "type": "FLOAT64"
+  },
+  {
+    "name": "bids_2_amount",
+    "mode": "NULLABLE",
+    "type": "FLOAT64"
+  },
+  {
+    "name": "asks_3_price",
+    "mode": "NULLABLE",
+    "type": "FLOAT64"
+  },
+  {
+    "name": "asks_3_amount",
+    "mode": "NULLABLE",
+    "type": "FLOAT64"
+  },
+  {
+    "name": "bids_3_price",
+    "mode": "NULLABLE",
+    "type": "FLOAT64"
+  },
+  {
+    "name": "bids_3_amount",
+    "mode": "NULLABLE",
+    "type": "FLOAT64"
+  },
+  {
+    "name": "asks_4_price",
+    "mode": "NULLABLE",
+    "type": "FLOAT64"
+  },
+  {
+    "name": "asks_4_amount",
+    "mode": "NULLABLE",
+    "type": "FLOAT64"
+  },
+  {
+    "name": "bids_4_price",
+    "mode": "NULLABLE",
+    "type": "FLOAT64"
+  },
+  {
+    "name": "bids_4_amount",
+    "mode": "NULLABLE",
+    "type": "FLOAT64"
+  }
+]

@@ -4,8 +4,7 @@ module "data_mock" {
   region        = var.region
   random_suffix = var.random_suffix
 
-  trigger_schedule         = "*/10 * * * *"
-  order_book_updates_topic = "order-book-${var.random_suffix}"
+  trigger_schedule = "*/10 * * * *"
 }
 
 module "dataset" {
@@ -15,5 +14,7 @@ module "dataset" {
   region        = var.region
   random_suffix = var.random_suffix
 
-  order_book_updates_topic = "order-book-${var.random_suffix}"
+  order_book_updates_topic = module.data_mock.topic.id
+
+  depends_on = [module.data_mock]
 }

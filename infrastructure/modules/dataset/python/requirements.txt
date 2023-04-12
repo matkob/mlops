@@ -1,4 +1,0 @@
-google-cloud-logging
-google-cloud-bigquery
-pyarrow
-pandas

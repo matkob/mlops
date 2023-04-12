@@ -15,5 +15,5 @@ variable "random_suffix" {
 
 variable "order_book_updates_topic" {
   type        = string
-  description = "Name of the topic containing live order book updates"
+  description = "ID of the topic containing live order book updates"
 }

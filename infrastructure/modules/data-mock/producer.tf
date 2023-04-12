@@ -1,16 +1,27 @@
+resource "google_pubsub_schema" "order_book" {
+  name       = "order-book-${var.random_suffix}"
+  type       = "PROTOCOL_BUFFER"
+  definition = file("${path.root}/schema/order_book.proto")
+
+  depends_on = [google_project_service.pubsub]
+}
+
 resource "google_pubsub_topic" "mocked_data" {
-  name = var.order_book_updates_topic
+  name = "order-book-${var.random_suffix}"
 
   # Minimum duration is 10 min
-  message_retention_duration = "610s"
+  message_retention_duration = "600s"
+
+  schema_settings {
+    schema   = google_pubsub_schema.order_book.id
+    encoding = "JSON"
+  }
 
   labels = {
     owner   = "matkob"
     purpose = "mlops-demo"
     type    = "mock"
   }
-
-  depends_on = [google_project_service.pubsub]
 }
 
 data "archive_file" "function_code" {
@@ -33,7 +44,7 @@ resource "google_cloudfunctions_function" "data_mock" {
   available_memory_mb = 1024
   entry_point         = "produce"
   max_instances       = 1
-  timeout             = 60
+  timeout             = 120
 
   source_archive_bucket = google_storage_bucket.data_mock.name
   source_archive_object = google_storage_bucket_object.data_mock_function_code.name
@@ -49,10 +60,8 @@ resource "google_cloudfunctions_function" "data_mock" {
   }
 
   environment_variables = {
-    SOURCE_BUCKET = google_storage_bucket.data_mock.name
-    SOURCE_OBJECT = google_storage_bucket_object.timeseries_data.name
-    PERIOD        = "10m"
-    SINK          = google_pubsub_topic.mocked_data.id
+    TOPIC = google_pubsub_topic.mocked_data.id
+    COUNT = "100"
   }
 
   event_trigger {
@@ -68,5 +77,8 @@ resource "google_cloudfunctions_function" "data_mock" {
     ]
   }
 
-  depends_on = [google_project_service.functions]
+  depends_on = [
+    google_project_service.functions,
+    google_project_service.build
+  ]
 }
