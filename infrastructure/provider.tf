@@ -12,6 +12,10 @@ terraform {
       version = "2.3.0"
     }
   }
+
+  backend "gcs" {
+   bucket  = "terraform-state-568de2"
+ }
 }
 
 provider "google" {
