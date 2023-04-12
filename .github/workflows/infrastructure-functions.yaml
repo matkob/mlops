@@ -1,4 +1,4 @@
-name: Deploy mock-data function
+name: Deploy infrastructure functions
 
 on:
   workflow_dispatch:
@@ -7,13 +7,13 @@ on:
     - 'infrastructure/modules/data-mock/python/**'
 
 jobs:
-  Deploy-Mock-Data-Function:
-    runs-on: ubuntu-latest
+  deploy:
+    name: 'Deploy mock-data function' 
+    runs-on: 'ubuntu-latest'
     steps:
     - uses: 'actions/checkout@v3'
 
-    - id: 'auth'
-      name: 'Authenticate to Google Cloud'
+    - name: 'Authenticate to Google Cloud'
       uses: 'google-github-actions/auth@v1'
       with:
         credentials_json: '${{ secrets.GOOGLE_CLOUD }}'
@@ -23,5 +23,20 @@ jobs:
       with:
         version: '>= 363.0.0'
 
-    - name: 'Use gcloud CLI'
-      run: 'gcloud info'
+    - name: 'Deploy Cloud Function'
+      uses: 'google-github-actions/deploy-cloud-functions@v1'
+      with:
+        name: 'data-mock-568de2'
+        description: 'Function producing mocked data'
+        runtime: 'python310'
+        entry_point: 'produce'
+        memory_mb: 1024
+        region: 'europe-west1'
+        env_vars: 'TOPIC=projects/mlops-383318/topics/order-book-568de2,COUNT=100'
+        labels: 'owner=matkob,purpose=mlops-demo,type=mock'
+        source_dir: 'infrastructure/modules/data-mock/python'
+        timeout: 120
+        max_instances: 1
+        event_trigger_type: 'providers/cloud.pubsub/eventTypes/topic.publish'
+        event_trigger_resource: 'projects/mlops-383318/topics/data-mock-trigger-568de2'
+        build_environment_variables: 'GOOGLE_FUNCTION_SOURCE=mock_data.py'
