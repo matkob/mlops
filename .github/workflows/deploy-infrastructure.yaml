@@ -10,6 +10,9 @@ jobs:
   deploy-infra:
     name: 'Deploy infrastructure'
     runs-on: 'ubuntu-latest'
+    defaults:
+      run:
+        working-directory: 'infrastructure'
     steps:
     - uses: 'actions/checkout@v3'
 
@@ -28,12 +31,13 @@ jobs:
         version: '>= 363.0.0'
 
     - name: 'Initialize Terraform'
-      run: 'terraform init'
-      working-directory: 'infrastructure'
+      run: 'terraform init -input=false'
 
-    - name: Validate infrastructure
-      run: 'terraform validate -no-color'
-      working-directory: 'infrastructure'
+    - name: 'Plan infrastructure'
+      run: 'terraform plan -out=tfplan -input=false'
+
+    - name: Apply infrastructure
+      run: 'terraform apply -input=false tfplan'
 
   deploy-functions:
     name: 'Deploy Cloud Functions' 
