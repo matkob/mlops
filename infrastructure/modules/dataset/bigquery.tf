@@ -61,20 +61,16 @@ resource "google_bigquery_table" "live" {
   }
 }
 
-data "google_project" "project" {
-  project_id = var.project_id
-}
-
 resource "google_project_iam_member" "viewer" {
-  project = data.google_project.project.project_id
+  project = var.project_id
   role    = "roles/bigquery.metadataViewer"
-  member  = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-pubsub.iam.gserviceaccount.com"
+  member  = "serviceAccount:service-${var.project_number}@gcp-sa-pubsub.iam.gserviceaccount.com"
 }
 
 resource "google_project_iam_member" "editor" {
-  project = data.google_project.project.project_id
+  project = var.project_id
   role    = "roles/bigquery.dataEditor"
-  member  = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-pubsub.iam.gserviceaccount.com"
+  member  = "serviceAccount:service-${var.project_number}@gcp-sa-pubsub.iam.gserviceaccount.com"
 }
 
 resource "google_pubsub_subscription" "live_order_book_sink" {
