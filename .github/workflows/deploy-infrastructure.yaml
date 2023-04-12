@@ -6,6 +6,10 @@ on:
     paths:
     - 'infrastructure/modules/data-mock/python/**'
 
+env:
+  # Appended to all the infrastructure components
+  RANDOM_SUFFIX: '568de2'
+
 jobs:
   deploy-infra:
     name: 'Deploy infrastructure'
@@ -30,14 +34,24 @@ jobs:
       with:
         version: '>= 363.0.0'
 
+    - name: 'Set up variables'
+      run: |
+        set -euo pipefail
+
+        PROJECT_NUMBER=$(gcloud projects describe $GCLOUD_PROJECT --format json | jq -r '.projectNumber')
+        
+        echo "project_id = \"$GCLOUD_PROJECT\"" >> terraform.tfvars
+        echo "project_number = \"$PROJECT_NUMBER\"" >> terraform.tfvars
+        echo "random_suffix = \"$RANDOM_SUFFIX\"" >> terraform.tfvars
+
     - name: 'Initialize Terraform'
       run: 'terraform init -input=false'
 
     - name: 'Plan infrastructure'
       run: 'terraform plan -out=tfplan -input=false'
 
-    - name: Apply infrastructure
-      run: 'terraform apply -input=false tfplan'
+    # - name: Apply infrastructure
+    #   run: 'terraform apply -input=false tfplan'
 
   deploy-functions:
     name: 'Deploy Cloud Functions' 
