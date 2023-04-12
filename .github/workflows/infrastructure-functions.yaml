@@ -1,5 +1,10 @@
 name: Deploy mock-data function
 
+on:
+  push:
+    paths:
+    - 'infrastructure/modules/data-mock/python/**'
+
 jobs:
   Deploy-Mock-Data-Function:
     runs-on: ubuntu-latest
