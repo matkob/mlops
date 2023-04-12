@@ -29,11 +29,11 @@ jobs:
 
     - name: 'Initialize Terraform'
       run: 'terraform init'
-      working_directory: 'infrastructure'
+      working-directory: 'infrastructure'
 
     - name: Validate infrastructure
       run: 'terraform validate -no-color'
-      working_directory: 'infrastructure'
+      working-directory: 'infrastructure'
 
   deploy-functions:
     name: 'Deploy Cloud Functions' 
