@@ -1,0 +1,35 @@
+name: Check codebase
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+    - '**/*.py'
+  pull_request:
+    branches:
+    - 'master'
+
+jobs:
+  check-codebase:
+    name: 'Check the code'
+    runs-on: 'ubuntu-latest'
+    steps:
+    - uses: 'actions/checkout@v3'
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: 'Install Python dependencies'
+      run: |
+        set -euo pipefail
+
+        python -m pip install --upgrade pip
+        pip install \
+          -r requirements.txt \
+          -r forecasting_model/src/requirements.txt \
+          -r infrastructure/modules/data-mock/python/requirements.txt
+
+    - name: 'Run code checks'
+      run: 'doit code'
