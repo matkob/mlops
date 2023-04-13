@@ -15,7 +15,15 @@ module "dataset" {
   region         = var.region
   random_suffix  = var.random_suffix
 
-  order_book_updates_topic = module.data_mock.topic.id
+  order_book_updates_topic = module.data_mock.payload_topic.id
 
   depends_on = [module.data_mock]
+}
+
+output "trigger_topic" {
+  value = module.data_mock.trigger_topic.id
+}
+
+output "payload_topic" {
+  value = module.data_mock.payload_topic.id
 }

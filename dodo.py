@@ -10,7 +10,7 @@ def task_code():
     code_files = list(Path(".").glob("**/*.(py|tf)"))
     project_roots = [
         "forecasting_model",
-        "infrastructure/modules/data-mock/python",
+        "infrastructure/functions/data-mock",
     ]
 
     yield {
@@ -88,14 +88,10 @@ def task_data():
     data_file = "order_book.csv"
     url = "https://datasets.tardis.dev/v1/binance/book_snapshot_5/2023/03/01/BTCUSDT.csv.gz"  # noqa: E501
 
-    def rename_columns():
-        import pandas as pd
-
-        def fix_column_name(column: str):
-            return column.replace("[", "_").replace("].", "_")
-
-        f = f"{data_dir}/{data_file}"
-        pd.read_csv(f).rename(columns=fix_column_name).to_csv(f, index=False)
+    data_targets = [
+        f"infrastructure/data/{data_file}",
+        f"forecasting_model/data/01_raw/{data_file}",
+    ]
 
     yield {
         "name": "init",
@@ -107,8 +103,29 @@ def task_data():
 
     yield {
         "name": "download",
+        "targets": [f"{data_dir}/{data_file}.raw"],
+        "actions": [CmdAction(f"curl {url} | gunzip -c > {data_dir}/{data_file}.raw")],
+        "uptodate": [run_once],
+        "verbosity": 0,
+        "task_dep": ["data:init"],
+    }
+
+    def rename_columns():
+        import pandas as pd
+
+        def map_column(column: str):
+            return column.replace("[", "_").replace("].", "_")
+
+        file_in = f"{data_dir}/{data_file}.raw"
+        file_out = f"{data_dir}/{data_file}"
+        pd.read_csv(file_in).rename(columns=map_column).to_csv(file_out, index=False)
+
+    yield {
+        "name": "process",
         "targets": [f"{data_dir}/{data_file}"],
-        "actions": [CmdAction(f"curl {url} | gunzip -c > {data_dir}/{data_file}")],
+        "actions": [
+            (rename_columns,),
+        ],
         "uptodate": [run_once],
         "verbosity": 0,
         "task_dep": ["data:init"],
@@ -116,16 +133,9 @@ def task_data():
 
     yield {
         "name": "prepare",
-        "targets": [
-            f"infrastructure/data/{data_file}",
-            f"forecasting_model/data/01_raw/{data_file}",
-        ],
+        "targets": data_targets,
         "actions": [
-            (rename_columns,),
-            CmdAction(f"cp {data_dir}/{data_file} infrastructure/data/{data_file}"),
-            CmdAction(
-                f"cp {data_dir}/{data_file} forecasting_model/data/01_raw/{data_file}"
-            ),
+            CmdAction(f"cp {data_dir}/{data_file} {target}") for target in data_targets
         ],
-        "task_dep": ["data:download"],
+        "task_dep": ["data:process"],
     }

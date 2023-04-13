@@ -1,7 +1,7 @@
-output "bucket" {
-  value = google_storage_bucket.data_mock.url
+output "trigger_topic" {
+  value = google_pubsub_topic.trigger
 }
 
-output "topic" {
-  value = google_pubsub_topic.mocked_data
+output "payload_topic" {
+  value = google_pubsub_topic.payload
 }
