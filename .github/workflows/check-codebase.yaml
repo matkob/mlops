@@ -29,7 +29,7 @@ jobs:
         pip install \
           -r requirements.txt \
           -r forecasting_model/src/requirements.txt \
-          -r infrastructure/modules/data-mock/python/requirements.txt
+          -r infrastructure/functions/data-mock/requirements.txt
 
     - name: 'Run code checks'
       run: 'doit code'
