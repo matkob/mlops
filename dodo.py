@@ -73,6 +73,7 @@ def task_model(visualize: bool):
         "file_dep": model_files,
         "task_dep": ["data:prepare"],
         "actions": [CmdAction("kedro run", cwd="forecasting_model")],
+        "uptodate": [run_once],
     }
 
     if visualize:
@@ -80,6 +81,7 @@ def task_model(visualize: bool):
             "name": "visualize",
             "file_dep": model_files,
             "actions": [CmdAction("kedro viz", cwd="forecasting_model")],
+            "uptodate": [run_once],
         }
 
 

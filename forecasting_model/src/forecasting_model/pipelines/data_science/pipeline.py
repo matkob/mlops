@@ -9,7 +9,7 @@ def create_pipeline(**kwargs: Dict[str, Any]) -> Pipeline:
         [
             node(
                 func=split_data,
-                inputs=["processed_order_book", "params:model_options"],
+                inputs=["dataset", "params:model_options"],
                 outputs=["X_train", "X_test", "y_train", "y_test"],
                 name="split_data",
             ),

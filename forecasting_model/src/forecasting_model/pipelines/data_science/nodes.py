@@ -19,8 +19,8 @@ def split_data(
     Returns:
         Split data.
     """
-    X = data.drop(columns="mid.price")
-    y = data["mid.price"]
+    X = data.drop(columns="mid_price")
+    y = data["mid_price"]
     X_train, X_test, y_train, y_test = train_test_split(
         X,
         y,

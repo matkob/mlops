@@ -2,38 +2,52 @@ from typing import Any, Dict
 import pandas as pd
 
 
-def enrich_order_book(
-    order_book: pd.DataFrame, parameters: Dict[str, Any]
-) -> pd.DataFrame:
-    """Preprocesses the data for order book.
-    Note this is overly simplified problem with simple timeseries processing
-    just for the purpose of the demo.
+def sort_by_time(order_book: pd.DataFrame) -> pd.DataFrame:
     """
-
-    time_window = parameters["time_window"]
-
-    asks_n_bids = [c for c in order_book.columns if "asks" in c or "bids" in c]
-
-    df = (
+    Sorts the order book with timestamp value and removes all the temporal columns afterwards.
+    """  # noqa: E501
+    return (
         order_book.sort_values(by="timestamp")
         # After sorting timestamp is no longer needed
         .drop(columns=["timestamp", "local_timestamp", "exchange", "symbol"])
-        # There should only be asks and bids in the dataset
-        [asks_n_bids].astype("float32")
     )
-    df["mid.price"] = (df["asks[0].price"] + df["bids[0].price"]) / 2
 
-    # shifting input data
+
+def calculate_mid_price(order_book: pd.DataFrame) -> pd.DataFrame:
+    """
+    Calculates mid price by getting an average between smallest ask and biggest bid.
+    """  # noqa: E501
+
+    asks_n_bids = [c for c in order_book.columns if "asks" in c or "bids" in c]
+    typed = order_book[asks_n_bids].astype("float32")
+
+    df = pd.DataFrame(index=order_book.index)
+    df["mid_price"] = (typed["asks_0_price"] + typed["bids_0_price"]) / 2
+
+    return df
+
+
+def create_historical_features(
+    order_book: pd.DataFrame, parameters: Dict[str, Any]
+) -> pd.DataFrame:
+    """
+    Creates historical features such as ask/bid values from the past. Can be parametrized with:
+    - time_window: Number of ticks to look back
+
+    Will result in a
+    """  # noqa: E501
+    time_window = parameters["time_window"]
+    asks_n_bids = [c for c in order_book.columns if "asks" in c or "bids" in c]
+
+    df = pd.DataFrame(index=order_book.index)
+
     for i in range(1, time_window + 1):
         cols = [f"{i}_tick_{c}" for c in asks_n_bids]
-        df[cols] = df[asks_n_bids].shift(periods=i)
+        df[cols] = order_book[asks_n_bids].shift(periods=i)
 
-    return df.drop(columns=asks_n_bids).dropna()
+    return df
 
 
-def process_feature_names(order_book: pd.DataFrame) -> pd.DataFrame:
-    """Removes any unsupported characters from a dataset."""
-
-    return order_book.rename(
-        mapper=lambda c: c.replace("[", "").replace("]", ""), axis=1
-    )
+def merge_features(mid_price: pd.DataFrame, historical: pd.DataFrame) -> pd.DataFrame:
+    """Merges features into a signle DataFrame using index."""
+    return pd.concat([mid_price, historical], axis="columns", join="inner")
