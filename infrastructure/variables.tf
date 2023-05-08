@@ -4,6 +4,9 @@ variable "project_id" {
 }
 
 variable "project_number" {
+  # This can be fetched by running 
+  # `gcloud projects describe mlops-383318 --format json | jq -r '.projectNumber'`
+  # Kept as variable to prevent unnecessary IAM roles replacement on each terraform run
   type        = string
   description = "Number of the project, one of the project's metadata"
 }
