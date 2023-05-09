@@ -19,10 +19,8 @@ notebooks
 references
 results
 
-# except the following
+# except the following (to keep the project structure)
 !logs/.gitkeep
 !notebooks/.gitkeep
 !references/.gitkeep
 !results/.gitkeep
-
-!data/01_raw

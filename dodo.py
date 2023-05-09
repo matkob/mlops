@@ -5,6 +5,10 @@ from doit import task_params
 
 DOIT_CONFIG = {"verbosity": 2}
 
+GCP_REGISTRY = "europe-west1-docker.pkg.dev"
+GCP_PROJECT_ID = "mlops-383318"
+MODEL_TRAINING_IMAGE = f"{GCP_REGISTRY}/{GCP_PROJECT_ID}/model/training"
+
 
 def task_code():
     code_files = list(Path(".").glob("**/*.(py|tf)"))
@@ -83,6 +87,29 @@ def task_model(visualize: bool):
             "actions": [CmdAction("kedro viz", cwd="forecasting_model")],
             "uptodate": [run_once],
         }
+
+
+def task_docker():
+    model_files = list(Path("forecasting_model").glob("**/*.py"))
+
+    yield {
+        "name": "build",
+        "file_dep": model_files,
+        "actions": [
+            CmdAction(
+                f"docker build . -t {MODEL_TRAINING_IMAGE}:latest -f Dockerfile.train",
+                cwd="forecasting_model",
+            )
+        ],
+        "uptodate": [False],
+    }
+
+    yield {
+        "name": "push",
+        "task_dep": ["docker:build"],
+        "actions": [CmdAction(f"docker push {MODEL_TRAINING_IMAGE}:latest")],
+        "uptodate": [False],
+    }
 
 
 def task_data():
