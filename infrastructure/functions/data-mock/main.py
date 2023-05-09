@@ -11,7 +11,7 @@ import google.cloud.logging as cloud_logging
 from typing import Any, Dict
 
 
-cloud_logging.Client().setup_logging()
+cloud_logging.Client().setup_logging()  # type: ignore
 
 
 def mock_data(count: int) -> pd.DataFrame:
