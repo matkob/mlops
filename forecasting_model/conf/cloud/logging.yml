@@ -1,0 +1,3 @@
+root:
+  # GCP handler isn't fully ready
+  handlers: [console]

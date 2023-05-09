@@ -1,10 +1,6 @@
-# TODO: raw setting is needed only for vertexai integration - this could be moved to cloud config
-
 order_book:
-  type: pandas.CSVDataSet
-  filepath: data/01_raw/order_book.csv
-  layer: raw
-
-processed_order_book:
-  type: pandas.CSVDataSet
-  filepath: data/05_model_input/order_book.csv
+  type: pandas.GBQTableDataSet
+  dataset: order_book_568de2
+  # Temporarily taking only live data which is much smaller dataset
+  table_name: live
+  project: mlops-383318

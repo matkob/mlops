@@ -35,3 +35,21 @@ https://kedro.readthedocs.io/en/stable/kedro_project_setup/settings.html."""
 # Class that manages the Data Catalog.
 # from kedro.io import DataCatalog
 # DATA_CATALOG_CLASS = DataCatalog
+
+# Overwriting Rich exception hook
+import sys
+import logging
+from typing import Any
+
+logger = logging.getLogger(__name__)
+
+
+def handle_exception(exc_type: Any, exc_value: Any, exc_traceback: Any) -> None:
+    if issubclass(exc_type, KeyboardInterrupt):
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+        return
+
+    logger.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+
+
+sys.excepthook = handle_exception

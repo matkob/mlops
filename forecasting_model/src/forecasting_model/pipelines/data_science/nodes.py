@@ -1,5 +1,6 @@
 import logging
-import mlflow
+
+# import mlflow
 from typing import Any, Dict, Tuple
 
 import pandas as pd
@@ -73,7 +74,7 @@ def evaluate_model(
         stage,
     )
 
-    mlflow.log_metric(f"{stage}_max_error", max_error)
-    mlflow.log_metric(f"{stage}_median_error", median_error)
-    mlflow.log_metric(f"{stage}_mse_error", mse_error)
-    mlflow.log_metric(f"{stage}_explained_variance", explained_variance)
+    # mlflow.log_metric(f"{stage}_max_error", max_error)
+    # mlflow.log_metric(f"{stage}_median_error", median_error)
+    # mlflow.log_metric(f"{stage}_mse_error", mse_error)
+    # mlflow.log_metric(f"{stage}_explained_variance", explained_variance)

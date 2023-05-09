@@ -1,9 +1,0 @@
-# Here we can override some of the default data sources' settings
-# By default it'll fallback to base settings
-# The interface is fairly simple and you can implement your own connector
-# Kedro also supports query parameters unknown at compile time
-
-# Kedro will fail if run with `-e cloud` parameter
-companies:
-  type: pandas.CSVDataSet
-  filepath: s3://my-test-bucket/data/01_raw/companies.csv
